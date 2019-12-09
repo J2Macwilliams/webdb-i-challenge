@@ -17,6 +17,23 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:id', ValidateId, (req, res) => {
+  const id = req.params.id
+
+  knex
+    .from("accounts")
+    .where({ id })
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ errorMessage: "Error getting the data" });
+    });
+});
+
+
+
 router.post('/', validatePostInfo, (req, res) => {
   const postInfo = req.body
   knex("accounts")
