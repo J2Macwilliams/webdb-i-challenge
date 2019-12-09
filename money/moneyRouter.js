@@ -12,8 +12,8 @@ router.get('/', (req, res) => {
       res.status(200).json(posts);
     })
     .catch(error => {
-      console.log(error);
-      res.status(500).json({ errorMessage: "Error getting the data" });
+      
+      res.status(500).json({ errorMessage: "Error getting the data", error });
     });
 });
 
@@ -28,7 +28,7 @@ router.get('/:id', ValidateId, (req, res) => {
     })
     .catch(error => {
       console.log(error);
-      res.status(500).json({ errorMessage: "Error getting the data" });
+      res.status(500).json({ errorMessage: "Error getting the data", error });
     });
 });
 
@@ -61,14 +61,25 @@ router.put('/:id', ValidateId, (req, res) => {
       }
     })
     .catch(error => {
-      console.log(error);
       res.status(500).json({
-        errorMessage: "Error updating the post"
+        errorMessage: "Error updating the post", error
       });
     });
 });
 
+router.delete('/:id', ValidateId, (req, res) => {
+  const id = req.params.id
 
+  knex("accounts")
+  .where(id)
+  .del()
+  .then(deleted => {
+    res.status(200).json({message: `${deleted} items removed`})
+  })
+  .catch(error => {
+    res.status(500).json({message: "error deleting item.", error})
+  })
+});
 
 
 function validatePostInfo(req, res, next) {
