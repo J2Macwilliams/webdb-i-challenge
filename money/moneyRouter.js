@@ -46,6 +46,29 @@ router.post('/', validatePostInfo, (req, res) => {
     });
 });
 
+router.put('/:id', ValidateId, (req, res) => {
+  const id = req.params.id
+  const change = req.body
+
+  knex("accounts")
+    .where({ id }) // ALWAYS FILTER ON UPDATE (AND DELETE)
+    .update(change)
+    .then(count => {
+      if (count > 0) {
+        res.status(200).json({ message: `${count} record(s) updated.` });
+      } else {
+        res.status(404).json({ message: "Post not found" });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({
+        errorMessage: "Error updating the post"
+      });
+    });
+});
+
+
 
 
 function validatePostInfo(req, res, next) {
