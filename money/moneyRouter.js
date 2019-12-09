@@ -1,9 +1,11 @@
 const express = require('express');
 
+// Call db -  knex to better understand how to access the DB
 const knex = require('../data/dbConfig');
 
 const router = express.Router();
 
+// Global GET endpoint-----------------------------------------------------
 router.get('/', (req, res) => {
   knex
     .select('*')
@@ -17,6 +19,7 @@ router.get('/', (req, res) => {
     });
 });
 
+// GET endpoint by Id-----------------------------------------------------
 router.get('/:id', ValidateId, (req, res) => {
   const id = req.params.id
 
@@ -33,7 +36,7 @@ router.get('/:id', ValidateId, (req, res) => {
 });
 
 
-
+// POST endpoint for new projects with validation of necessary information
 router.post('/', validatePostInfo, (req, res) => {
   const postInfo = req.body
   knex("accounts")
@@ -46,12 +49,14 @@ router.post('/', validatePostInfo, (req, res) => {
     });
 });
 
+// PUT by ID to Update projects-----------------------------------------------------
 router.put('/:id', ValidateId, (req, res) => {
   const id = req.params.id
   const change = req.body
 
   knex("accounts")
-    .where({ id }) // ALWAYS FILTER ON UPDATE (AND DELETE)
+  // Always Filter on a PUT!!!!!!!!!!!!!!!!!!
+    .where({ id }) 
     .update(change)
     .then(count => {
       if (count > 0) {
@@ -67,21 +72,23 @@ router.put('/:id', ValidateId, (req, res) => {
     });
 });
 
+// DELETE by projects ID-----------------------------------------------------
 router.delete('/:id', ValidateId, (req, res) => {
   const id = req.params.id
 
   knex("accounts")
-  .where(id)
+  // Always filter on a DELETE!!!!!!!!!!!!!!!!!
+  .where({id})
   .del()
   .then(deleted => {
-    res.status(200).json({message: `${deleted} items removed`})
+    res.status(200).json({message: `${deleted} item(s) removed`})
   })
   .catch(error => {
     res.status(500).json({message: "error deleting item.", error})
   })
 });
 
-
+// Custom middleware-----------------------------------------------------
 function validatePostInfo(req, res, next) {
   const postInfo = req.body
 
