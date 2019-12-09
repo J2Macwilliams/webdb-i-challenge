@@ -39,13 +39,14 @@ router.get('/:id', ValidateId, (req, res) => {
 // POST endpoint for new projects with validation of necessary information
 router.post('/', validatePostInfo, (req, res) => {
   const postInfo = req.body
+
   knex("accounts")
     .insert(postInfo)
     .then(post => {
-      res.status(200).json(post)
+      res.status(201).json(post)
     })
-    .catch(error => {
-      res.status(500).json({ errorMessage: "Error adding the post", error });
+    .catch(() => {
+      res.status(500).json({ errorMessage: "Error adding the post"});
     });
 });
 
@@ -90,9 +91,9 @@ router.delete('/:id', ValidateId, (req, res) => {
 
 // Custom middleware-----------------------------------------------------
 function validatePostInfo(req, res, next) {
-  const postInfo = req.body
+  const info = req.body
 
-  if (!postInfo) {
+  if (!info.name && !info.budget) {
     res.status(404).json({ errorMessage: "Missing Necessary information" })
   } else {
     next();
